@@ -1,21 +1,37 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { Provider } from "react-redux";
+import TodoApp from "./TodoApp";
+import store from "./store/index";
 
 export default function App() {
+  // const [task, setTask] = useState();
+  // const [taskItems, setTaskItems] = useState([]);
+
+  // const handleAddTask = () => {
+  //   Keyboard.dismiss();
+  //   setTaskItems([...taskItems, task]);
+  //   setTask(null);
+  // };
+
+  // const completeTask = (index) => {
+  //   let itemsCopy = [...taskItems];
+  //   itemsCopy.splice(index, 1);
+  //   setTaskItems(itemsCopy);
+  // };
+
+  // let appState = {
+  //   data: [
+  //     { title: "Go to the mall", isFinished: true },
+  //     { title: "Go to the school", isFinished: false },
+  //     { title: "Go to church", isFinished: true },
+  //     { title: "Go to the cinema", isFinished: false },
+  //     { title: "Go to the stadium", isFinished: true },
+  //   ],
+  // };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <TodoApp />
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
