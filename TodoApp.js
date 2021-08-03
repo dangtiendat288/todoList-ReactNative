@@ -1,3 +1,4 @@
+import "react-native-gesture-handler";
 import React, { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -13,8 +14,18 @@ import Task from "./components/Task";
 import { connect } from "react-redux";
 import { addTask, deleteTask } from "./redux/actions/actions";
 
+import Animated, {
+  //  AnimatedLayout
+  useSharedValue,
+  useAnimatedStyle,
+  useAnimatedGestureHandler,
+  withSpring,
+} from "react-native-reanimated";
+
+import { PanGestureHandler } from "react-native-gesture-handler";
+
 const TodoApp = ({ todo_list, addTask, deleteTask }) => {
-  const [task, setTask] = React.useState("");
+  const [task, setTask] = useState("");
 
   const handleAddTask = () => {
     addTask(task);
@@ -24,23 +35,51 @@ const TodoApp = ({ todo_list, addTask, deleteTask }) => {
   const handleDeleteTask = (id) => {
     deleteTask(id);
   };
+
+  const x = useSharedValue(0);
+
+  const uas = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: x.value }],
+    };
+  });
+
+  const SwipeHandler = useAnimatedGestureHandler({
+    onStart: (event, ctx) => {
+      ctx.startX = x.value;
+    },
+    onActive: (event, ctx) => {
+      console.log(event.translationX);
+      x.value = ctx.startX + event.translateX;
+    },
+    onEnd: (event, ctx) => {
+      x.value = withSpring(0);
+    },
+  });
+
   return (
     <View style={styles.container}>
-      <ScrollView>
-        <View style={styles.textWrapper}>
-          <Text style={styles.sectionTitle}>Today's tasks!</Text>
-          <View style={styles.items}>
-            {todo_list.map((todo) => (
-              <TouchableOpacity
-                key={todo.id}
-                onPress={() => handleDeleteTask(todo.id)}
-              >
-                <Task text={todo.task} color={todo.color} />
-              </TouchableOpacity>
-            ))}
-          </View>
+      {/* <ScrollView> */}
+      <View style={styles.textWrapper}>
+        <Text style={styles.sectionTitle}>Today's tasks!</Text>
+        <View style={styles.items}>
+          {todo_list.map((todo) => (
+            <PanGestureHandler key={todo.id} onGestureEvent={SwipeHandler}>
+              <Animated.View style={uas}>
+                <TouchableOpacity
+                  onPress={() => {
+                    // handleDeleteTask(todo.id)
+                    console.log("0");
+                  }}
+                >
+                  <Task text={todo.task} color={todo.color} />
+                </TouchableOpacity>
+              </Animated.View>
+            </PanGestureHandler>
+          ))}
         </View>
-      </ScrollView>
+      </View>
+      {/* </ScrollView> */}
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
